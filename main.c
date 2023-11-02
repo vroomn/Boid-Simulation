@@ -13,5 +13,7 @@ int main(void) {
         printf("worked");
     }
 
+    glfwTerminate();
+
     return 0;
 }
