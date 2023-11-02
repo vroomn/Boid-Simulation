@@ -8,7 +8,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(C:\\Users\\harri\\Code\\BoidsVulkan\\libs\\glfw-3.3.8)
 
-add_executable(main main.c)
+add_executable(main src/main.c)
     
 target_include_directories(
     main
