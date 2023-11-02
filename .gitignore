@@ -1,0 +1,9 @@
+/build
+/libs/glfw-3.3.8/deps/
+/libs/glfw-3.3.8/docs/
+/libs/glfw-3.3.8/examples/
+/libs/glfw-3.3.8/src/
+/libs/glfw-3.3.8/tests/
+/libs/glfw-3.3.8/cmake_uninstall.cmake.in
+/libs/glfw-3.3.8/CONTRIBUTORS.md
+/libs/glfw-3.3.8/cmake_uninstall.cmake.in
