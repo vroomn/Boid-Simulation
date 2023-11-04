@@ -1,7 +1,15 @@
+/* EXAMPLES AND MAJORITY OF BOILERPLATE TAKEN OR MIDIFIED FROM THE VULKAN API DOCUMENTATION TUTORIAL */
+
 #include <stdio.h>
+#include <string.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
+
+void glfwClean(GLFWwindow* window) {
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
 
 int main(void) {
     //Initalization of libraries
@@ -35,11 +43,51 @@ int main(void) {
     VkInstanceCreateInfo createInfo = {VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
+
+    //Validation layer config
+    #if DEBUG_MODE == 1
+        printf("Debug Mode\n");
+
+        const char *validationLayers[] = {
+            "VK_LAYER_KHRONOS_validation"
+        };
+
+        uint32_t layerCount = 0;
+        vkEnumerateInstanceLayerProperties(&layerCount, NULL);
+        
+        VkLayerProperties availableLayers[layerCount];
+        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
+
+        for (size_t i = 0; i < sizeof(validationLayers)/sizeof(validationLayers[0]); i++) {
+            int layerFound = 0;
+            const char *currentLayer = validationLayers[i];
+
+            for (size_t j = 0; j < sizeof(availableLayers)/sizeof(availableLayers[0]); j++) {
+                if (strcmp(currentLayer, (const char *)availableLayers[j].layerName) ) //Dunno if the extra cast is needed but dont trust it anyway, I hate strings
+                {
+                    layerFound = 1;
+                }
+            }
+
+            if (layerFound != 1)
+            {
+                printf("Validation layers not availible!\n");
+                glfwClean(window);
+                return 0;
+            }
+            else { printf("Layers found!\n"); }
+            
+        }
+        
+    #else
+        printf("Release Mode\n");
+    #endif
+
     //Number of global validation layers
-    uint32_t glfwExtensionCount = 0;
+    /*uint32_t glfwExtensionCount = 0;
     createInfo.ppEnabledExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     createInfo.enabledExtensionCount = glfwExtensionCount;
-    createInfo.enabledLayerCount = 0; //What gloabls layers are enabled
+    createInfo.enabledLayerCount = 0;*/ //What gloabls layers are enabled
 
     //Vulkan instance for the current program, connects library and the API
     VkInstance vkInstance; //This could become tempermental in the future so if release crashes insert: VK_OBJECT_TYPE_INSTANCE and ignore compiler cries
@@ -58,8 +106,7 @@ int main(void) {
     vkDestroyInstance(vkInstance, NULL);
 
     //Cleanup GLFW
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    glfwClean(window);
 
     return 0;
 }
