@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 
 project(
     BoidsVulkan
-    LANGUAGES C CXX)
+    LANGUAGES C)
 
 add_compile_definitions(DEBUG_MODE=1) #Defaults to release mode when removed or set to 0 (0=Release Mode :: 1=Debug Mode) (opt in)
 
@@ -16,12 +16,19 @@ add_subdirectory(
     ${CMAKE_CURRENT_SOURCE_DIR}\\libs\\glfw-3.3.8
     )
 
-add_executable(main src/main.c)
+set(SOURCE_FILES 
+    src/main.c
+    src/glfwFuncs.c
+    src/vulkan_src/vulkanInit.c
+    src/vulkan_src/vulkanDebug.c)
+
+add_executable(main ${SOURCE_FILES})
 
 target_include_directories(
     main
-    PUBLIC
-    libs/glfw-3.3.8/include
+    PRIVATE
+    src/
+    libs/glfw-3.3.8/include/
     /VulkanSDK/1.3.268.0/Include
 )
 
