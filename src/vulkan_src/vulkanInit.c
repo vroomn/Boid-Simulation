@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
+/*Create a new Vulkan instance, adjust for debug mode
+* @param window: GLFW window object to do draw calls on
+* @param debugMessenger: A messenger id that can allow the debug system to be destroyed
+*/
 VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMessenger) {
     //Information to feed into the VkInstance
     VkApplicationInfo appInfo = {VK_STRUCTURE_TYPE_APPLICATION_INFO};
