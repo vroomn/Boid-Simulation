@@ -20,8 +20,9 @@ void destoryProgram(VkInstance vkInstance, VkDebugUtilsMessengerEXT debugMesseng
 
     //Cleanup GLFW
     glfwClean(window);
-
-    getchar(); //Halts program close until there is a user input
+    #if DEBUG_MODE == 1
+        getchar(); //Halts program close until there is a user input
+    #endif
 
     exit(exitNum);
     return;
@@ -66,12 +67,53 @@ int main(void) {
         }
     } //TODO: Figure out what queue familes are supported by the GPU, currently assuming all needed are present
 
+    uint32_t queueFamilyIndicies;
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
+
+    VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies);
+
+    for (size_t i = 0; i < queueFamilyCount; i++)
+    {
+        if (queueFamilies[i].queueFlags == VK_QUEUE_GRAPHICS_BIT)
+        {
+            queueFamilyIndicies = i;
+        }
+    }
+
+    VkDeviceQueueCreateInfo queueCreateInfo = {VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = queueFamilyIndicies;
+    queueCreateInfo.queueCount = 1;
+    float queuePriority = 1.0f;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+    
+    VkPhysicalDeviceFeatures deviceFeatures = {};
+
+    VkDeviceCreateInfo deviceCreateInfo = {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
+    deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+    deviceCreateInfo.queueCreateInfoCount = 1;
+    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+    //TODO: Backward copat with device specific layers
+
+    VkDevice vkDevice;
+    if (vkCreateDevice(physicalDevice, &deviceCreateInfo, NULL, &vkDevice) != VK_SUCCESS)
+    {
+        printf("Failed to create device!\n");
+        destoryProgram(vkInstance, debugMessenger, window, -1);
+    }
+    VkQueue graphicsQueue;
+    vkGetDeviceQueue(vkDevice, queueFamilyIndicies, 0,  &graphicsQueue);
+
     //Main loop
     while (!glfwWindowShouldClose(window)) {
         //Get events and process them for glfw
         glfwPollEvents();
     }
     
+    vkDestroyDevice(vkDevice, NULL);
     destoryProgram(vkInstance, debugMessenger, window, 0);
 
     return 0;
