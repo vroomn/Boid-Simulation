@@ -5,6 +5,7 @@
     "files.associations": {
         "glfwfuncs.h": "c",
         "vulkaninit.h": "c",
-        "glfw3.h": "c"
+        "glfw3.h": "c",
+        "stdio.h": "c"
     }
 }
