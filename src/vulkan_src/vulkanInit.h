@@ -3,12 +3,17 @@
 
 VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMessenger);
 
-typedef struct //Likely to need editing as complexity rises
+/*Holds a logical device and the associated queue
+* @var: vkDevice: Vulkan logical device, type VkDevice
+* @var: vkQueue: Vulkan queue, expects only one
+* @todo: Add ability for more queues for the device
+*/
+typedef struct
 {
     VkDevice vkDevice;
     VkQueue vkQueue;
 }Device;
 
-Device deviceInit(VkInstance vkInstance);
+VkResult deviceInit(VkInstance vkInstance, Device* device);
 
 #endif

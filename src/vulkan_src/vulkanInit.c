@@ -108,7 +108,7 @@ VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMesseng
     return vkInstance;
 }
 
-Device deviceInit(VkInstance vkInstance) {
+VkResult deviceInit(VkInstance vkInstance, Device* device) {
     //Handle to a graphsics card to utilize
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
@@ -118,7 +118,7 @@ Device deviceInit(VkInstance vkInstance) {
     if (deviceCount == 0)
     {
         printf("No devices with Vulkan Support!\n");
-        return;
+        return VK_INCOMPLETE;
         //destoryProgram(vkInstance, debugMessenger, window, -1);
     }
 
@@ -169,15 +169,13 @@ Device deviceInit(VkInstance vkInstance) {
     deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
     //TODO: Backward copat with device specific layers
 
-
-    Device device;
-    if (vkCreateDevice(physicalDevice, &deviceCreateInfo, NULL, &device.vkDevice) != VK_SUCCESS)
+    if (vkCreateDevice(physicalDevice, &deviceCreateInfo, NULL, &(device->vkDevice)) != VK_SUCCESS)
     {
         printf("Failed to create device!\n");
-        return;
+        return VK_INCOMPLETE;
         //destoryProgram(vkInstance, debugMessenger, window, -1);
     }
-    vkGetDeviceQueue(device.vkDevice, queueFamilyIndicies, 0,  &device.vkQueue);
+    vkGetDeviceQueue(device->vkDevice, queueFamilyIndicies, 0,  &(device->vkQueue));
 
-    return device;
+    return VK_SUCCESS;
 }
