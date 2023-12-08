@@ -24,6 +24,7 @@ set(SOURCE_FILES
     src/glfw/glfwFuncs.c
     src/Initalization/vulkanInit.c
     src/Initalization/swapchain.c
+    src/Initalization/imageViews.c
     src/DebugTools/vulkanDebug.c)
 
 add_executable(main ${SOURCE_FILES})

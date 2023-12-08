@@ -1,5 +1,6 @@
 /* EXAMPLES AND MAJORITY OF BOILERPLATE TAKEN OR MIDIFIED FROM THE VULKAN API DOCUMENTATION TUTORIAL */
 
+#include "Initalization/imageViews.h"
 #include <vulkan/vulkan_core.h>
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
@@ -50,9 +51,19 @@ int main(void) {
     }
 
     VkSwapchainKHR swapChain = VK_OBJECT_TYPE_SWAPCHAIN_KHR; //Ignore this error, being dum
-    if (createSwapChain(physicalDevice, graphicsDevice.vkDevice, surface, &swapChain) != VK_SUCCESS) {
+    SwapchainImages swapChainImages;
+    if (createSwapChain(physicalDevice, graphicsDevice.vkDevice, surface, &swapChain, &swapChainImages) != VK_SUCCESS) {
         printf("ERROR IN SWAPCHAIN!\n");
         destoryProgram(vkInstance, debugMessenger, window, NULL, NULL, surface, -1);
+    }
+
+    SwapchainImageViews swapChainImageViews;
+    if (createImageViews(&swapChainImages, &swapChainImageViews, graphicsDevice.vkDevice) != VK_SUCCESS) {
+        for (int i = 0; i < swapChainImageViews.numViews; i++) {
+            vkDestroyImageView(graphicsDevice.vkDevice, swapChainImageViews.imageViews[i], NULL);
+        }
+        free(swapChainImageViews.imageViews);
+        destoryProgram(vkInstance, debugMessenger, window, graphicsDevice.vkDevice, swapChain, surface, -1);
     }
 
     //Main loop
@@ -61,6 +72,11 @@ int main(void) {
         glfwPollEvents();
     }
     
+    for (int i = 0; i < swapChainImageViews.numViews; i++) {
+        vkDestroyImageView(graphicsDevice.vkDevice, swapChainImageViews.imageViews[i], NULL);
+    }
+    free(swapChainImageViews.imageViews);
+
     destoryProgram(vkInstance, debugMessenger, window, graphicsDevice.vkDevice, swapChain, surface, 0);
 
     return 0;

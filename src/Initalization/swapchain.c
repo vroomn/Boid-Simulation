@@ -56,7 +56,7 @@ VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities) {
     return capabilities.currentExtent;
 }
 
-VkResult createSwapChain(VkPhysicalDevice physicalDevice, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR *swapChain) {
+VkResult createSwapChain(VkPhysicalDevice physicalDevice, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR *swapChain, SwapchainImages *swapChainImages) {
     SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
 
     if (swapChainSupport.presentModeCount == 0 || swapChainSupport.presentModeCount == 0) {
@@ -131,6 +131,16 @@ VkResult createSwapChain(VkPhysicalDevice physicalDevice, VkDevice device, VkSur
         printf("Failed to generate swapchain\n");
         return VK_ERROR_INITIALIZATION_FAILED;
     }
+
+    //Grab the images within the swapchain
+    vkGetSwapchainImagesKHR(device, *swapChain, &swapChainImages->numImages, NULL);
+    //Alllocate memory for the list of swapchain images
+    swapChainImages->images = (VkImage *)malloc(swapChainImages->numImages * sizeof(VkImage));
+    vkGetSwapchainImagesKHR(device, *swapChain, &swapChainImages->numImages, swapChainImages->images); 
+
+    //Assign supplamentary image data
+    swapChainImages->format = surfaceFormat.format;
+    swapChainImages->extent = extent;
 
     return VK_SUCCESS;
 }

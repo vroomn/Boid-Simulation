@@ -17,6 +17,13 @@ typedef struct {
     uint32_t presentModeCount;
 } SwapChainSupportDetails;
 
+typedef struct {
+    VkImage *images;
+    uint32_t numImages;
+    VkFormat format;
+    VkExtent2D extent;
+} SwapchainImages;
+
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR *availibleFormats, uint32_t formatCount);
@@ -25,6 +32,6 @@ VkPresentModeKHR chooseSwapPresentMode(VkPresentModeKHR *availibleModes, uint32_
 
 VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities);
 
-VkResult createSwapChain(VkPhysicalDevice physicalDevice, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR *swapChain); 
+VkResult createSwapChain(VkPhysicalDevice physicalDevice, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR *swapChain, SwapchainImages *swapChainImages); 
 
 #endif
