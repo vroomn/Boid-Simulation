@@ -6,6 +6,9 @@ project(
 
 add_compile_definitions(DEBUG_MODE=1) #Defaults to release mode when removed or set to 0 (0=Release Mode :: 1=Debug Mode) (opt in)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -18,9 +21,10 @@ add_subdirectory(
 
 set(SOURCE_FILES 
     src/main.c
-    src/glfwFuncs.c
-    src/vulkan_src/vulkanInit.c
-    src/vulkan_src/vulkanDebug.c)
+    src/glfw/glfwFuncs.c
+    src/Initalization/vulkanInit.c
+    src/Initalization/swapchain.c
+    src/DebugTools/vulkanDebug.c)
 
 add_executable(main ${SOURCE_FILES})
 

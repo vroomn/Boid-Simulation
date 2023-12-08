@@ -1,6 +1,11 @@
 #ifndef VULKAN_INIT_H
 #define VULKAN_INIT_H
 
+#include "DebugTools/vulkanDebug.h"
+#include <vulkan/vulkan_core.h>
+#define GLFW_INCLUDE_VULKAN
+#include "GLFW/glfw3.h"
+
 VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMessenger);
 
 /*Holds a logical device and the associated queue
@@ -8,12 +13,11 @@ VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMesseng
 * @var: vkQueue: Vulkan queue, expects only one
 * @todo: Add ability for more queues for the device
 */
-typedef struct
-{
+typedef struct {
     VkDevice vkDevice;
     VkQueue vkQueue;
 }Device;
 
-VkResult deviceInit(VkInstance vkInstance, Device* device);
+VkResult deviceInit(VkInstance vkInstance, Device *device, VkPhysicalDevice *physicalDevicePtr);
 
 #endif

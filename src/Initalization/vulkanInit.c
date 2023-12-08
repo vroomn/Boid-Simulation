@@ -1,8 +1,8 @@
-#define GLFW_INCLUDE_VULKAN
-#include "GLFW/glfw3.h"
+#include <stdint.h>
+#include <vulkan/vulkan_core.h>
+#include "DebugTools/vulkanDebug.h"
 #include "vulkanInit.h"
-#include "vulkanDebug.h"
-#include "glfwFuncs.h"
+#include "glfw/glfwFuncs.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -33,48 +33,9 @@ VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMesseng
         printf("Debug Mode\n");
 
         const char *validationLayers[] = {
-            "VK_LAYER_KHRONOS_validation"
+            "VK_LAYER_KHRONOS_validation",
         };
-
-        uint32_t validationLayerCount = sizeof(validationLayers)/sizeof(validationLayers[0]);
-
-        uint32_t layerCount = 0;
-        vkEnumerateInstanceLayerProperties(&layerCount, NULL);
-        
-        VkLayerProperties availableLayers[layerCount];
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
-
-        for (size_t i = 0; i < validationLayerCount; i++) {
-            int layerFound = 0;
-            const char *currentLayer = validationLayers[i];
-
-            for (size_t j = 0; j < sizeof(availableLayers)/sizeof(availableLayers[0]); j++) {
-                if (strcmp(currentLayer, (const char *)availableLayers[j].layerName) ) //Dunno if the extra cast is needed but dont trust it anyway, I hate strings
-                {
-                    layerFound = 1;
-                }
-            }
-
-            if (layerFound != 1)
-            {
-                printf("Validation layers not availible!\n");
-                glfwClean(window);
-                return 0;
-            }
-
-            printf("Layers found!\n");
-
-        }
-        createInfo.enabledLayerCount = validationLayerCount;
-        createInfo.ppEnabledLayerNames = validationLayers;
-
-        //Debug Messages to the stdout
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
-        debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-        debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        debugCreateInfo.pfnUserCallback = debugCallback;
-        debugCreateInfo.pUserData = NULL;
+        debugLayers(validationLayers, 1, window, &createInfo);
 
         //Additional extensions on top of glfw
         glfwExtensions[glfwExtensionCount++] = "VK_EXT_debug_utils";
@@ -97,7 +58,7 @@ VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMesseng
 
     //Adding the debug mode logging layer
     #if DEBUG_MODE == 1
-        if (CreateDebugUtilsMessengerEXT(vkInstance, &debugCreateInfo, NULL, debugMessenger) != VK_SUCCESS)
+        if (addDebugMessenger(vkInstance, debugMessenger, NULL) != VK_SUCCESS)
         {
             printf("Debug callback creation failed! Code: \n");
             glfwClean(window);
@@ -108,7 +69,7 @@ VkInstance vulkanInit(GLFWwindow* window, VkDebugUtilsMessengerEXT* debugMesseng
     return vkInstance;
 }
 
-VkResult deviceInit(VkInstance vkInstance, Device* device) {
+VkResult deviceInit(VkInstance vkInstance, Device* device, VkPhysicalDevice *physicalDevicePtr) {
     //Handle to a graphsics card to utilize
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
@@ -162,12 +123,21 @@ VkResult deviceInit(VkInstance vkInstance, Device* device) {
     
     VkPhysicalDeviceFeatures deviceFeatures = {};
 
+    const char *deviceExtentions[] = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
     VkDeviceCreateInfo deviceCreateInfo = {VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
     deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
     deviceCreateInfo.queueCreateInfoCount = 1;
     deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
-    //TODO: Backward copat with device specific layers
+    deviceCreateInfo.enabledExtensionCount = 1;
+    deviceCreateInfo.ppEnabledExtensionNames = deviceExtentions;
+    //TODO: Backward compat with device specific layers
+
+    //INFO: Querying for swapchain info
+    
 
     if (vkCreateDevice(physicalDevice, &deviceCreateInfo, NULL, &(device->vkDevice)) != VK_SUCCESS)
     {
@@ -177,5 +147,6 @@ VkResult deviceInit(VkInstance vkInstance, Device* device) {
     }
     vkGetDeviceQueue(device->vkDevice, queueFamilyIndicies, 0,  &(device->vkQueue));
 
+    *physicalDevicePtr = physicalDevice;
     return VK_SUCCESS;
 }
