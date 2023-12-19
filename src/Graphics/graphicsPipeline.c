@@ -121,6 +121,7 @@ void createGraphicsPipeline(VkDevice device, VkExtent2D extent, VkPipelineLayout
     colorBlending.blendConstants[1] = 0.0f;
     colorBlending.blendConstants[2] = 0.0f;
     colorBlending.blendConstants[3] = 0.0f;
+    colorBlending.pNext = NULL;
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo;
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -128,8 +129,9 @@ void createGraphicsPipeline(VkDevice device, VkExtent2D extent, VkPipelineLayout
     pipelineLayoutInfo.pSetLayouts = NULL;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges = NULL;
+    pipelineLayoutInfo.pNext = NULL;
 
-    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, NULL, &pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, NULL, pipelineLayout) != VK_SUCCESS) {
         printf("FAILED TO CREATE PIPELINE LAYOUT");
         return;
     }

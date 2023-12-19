@@ -67,7 +67,8 @@ int main(void) {
         destoryProgram(vkInstance, debugMessenger, window, graphicsDevice.vkDevice, swapChain, surface, -1);
     }
 
-    createGraphicsPipeline(graphicsDevice.vkDevice, swapChainImages.extent);
+    VkPipelineLayout pipelineLayout;
+    createGraphicsPipeline(graphicsDevice.vkDevice, swapChainImages.extent, &pipelineLayout);
 
     //Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -79,6 +80,8 @@ int main(void) {
         vkDestroyImageView(graphicsDevice.vkDevice, swapChainImageViews.imageViews[i], NULL);
     }
     free(swapChainImageViews.imageViews);
+
+    vkDestroyPipelineLayout(graphicsDevice.vkDevice, pipelineLayout, NULL);
 
     destoryProgram(vkInstance, debugMessenger, window, graphicsDevice.vkDevice, swapChain, surface, 0);
 
