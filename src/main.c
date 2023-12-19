@@ -1,4 +1,4 @@
-/* EXAMPLES AND MAJORITY OF BOILERPLATE TAKEN OR MIDIFIED FROM THE VULKAN API DOCUMENTATION TUTORIAL */
+/*EXAMPLES AND MAJORITY OF BOILERPLATE TAKEN OR MIDIFIED FROM THE VULKAN API DOCUMENTATION TUTORIAL */
 
 #include "Initalization/imageViews.h"
 #include <vulkan/vulkan_core.h>
@@ -15,6 +15,7 @@
 #include "Initalization/vulkanInit.h"
 #include "DebugTools/vulkanDebug.h"
 #include "Initalization/swapchain.h"
+#include "Graphics/graphicsPipeline.h"
 
 void destoryProgram(VkInstance vkInstance, VkDebugUtilsMessengerEXT debugMessenger, GLFWwindow* window, VkDevice device, VkSwapchainKHR swapchain, VkSurfaceKHR surface, int exitNum); 
 
@@ -65,6 +66,8 @@ int main(void) {
         free(swapChainImageViews.imageViews);
         destoryProgram(vkInstance, debugMessenger, window, graphicsDevice.vkDevice, swapChain, surface, -1);
     }
+
+    createGraphicsPipeline(graphicsDevice.vkDevice, swapChainImages.extent);
 
     //Main loop
     while (!glfwWindowShouldClose(window)) {
